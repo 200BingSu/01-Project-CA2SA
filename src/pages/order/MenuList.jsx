@@ -6,26 +6,49 @@ import NavBar from "../../components/order/NavBar";
 import { OrderContext } from "../../contexts/OrderContext";
 import { SearchInput } from "../../styles/common";
 import { CateButton, CateListDiv } from "../../styles/order/orderpage";
+import { getCafeMenu } from "../../apis/orderapi";
+import axios from "axios";
 
 const MenuList = () => {
   const navigate = useNavigate();
   // 앞에서 보낸 navigate의 state 받아오기
   const { order } = useContext(OrderContext);
-
+  // useState
   const [selectedCate, setSelectedCate] = useState(0);
+  const [cateList, setCateList] = useState([]);
+  const [cafeMenuInfo, setCafeMenuInfo] = useState({});
+
+  // 정보 받아오기
   useEffect(() => {
-    console.log("cafeId:", 2);
-    getCafeMenuList(2); //임시 아이디 입력
+    const getCafeMenu = async data => {
+      try {
+        const res = await axios.get(`/api/menu?cafeId=${data}`);
+        const resultData = res.data.resultData;
+        console.log("메뉴 리스트 조회:", resultData);
+        if (resultData) {
+          setCafeMenuInfo(resultData);
+          const cateListArr = cafeMenuInfo?.map((item, index) => {
+            return [...cateList, item.categoryName];
+          });
+          setCateList(cateListArr);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCafeMenu(3);
+    console.log("cafeMenuInfo", cafeMenuInfo);
   }, []);
-  const cateList = ["커피", "디카페인", "티", "시즌메뉴"];
+
+  // 메뉴 리스트에서 카테고리 정보 뽑아내기
+
   const handleClickCate = (item, index) => {
     setSelectedCate(index);
-
-    // 예정: cateId에 따른 메뉴 불러오기 axios 실행
   };
+
   return (
-    <div style={{ maxWidth: "640px;", position: "relative", margin: "0 auto" }}>
-      <NavBar path={"/"} title={"cafeName"} scrollevent={false} />
+    <div style={{ maxWidth: "640px", position: "relative", margin: "0 auto" }}>
+      <NavBar path={"/"} title={"cafeName"} />
       <div
         className="header"
         style={{
@@ -59,8 +82,6 @@ const MenuList = () => {
       <div className="cate-detail" style={{ padding: 20 }}>
         <h3>{cateList[selectedCate]}</h3>
         <div className="menu-list">
-          {/* 지금은 데이터 따라 리스트 나열만 있음.. */}
-          {/* 클릭시 메뉴 아이디를 통해, 메뉴 상세 정보를 불러오기 */}
           {getCafeMenuList.map((item, index) => {
             return (
               <div
@@ -102,13 +123,13 @@ const MenuList = () => {
           );
         }}
       >
-        <sapn style={{ fontSize: 18, color: "#fff", "font-weight": "bold" }}>
+        <div style={{ fontSize: 18, color: "#fff", fontWeight: "bold" }}>
           {order.menuList.reduce((acc, curr) => {
             const totalCount = acc + curr.count;
             return totalCount;
           }, 0)}{" "}
           | 장바구니
-        </sapn>
+        </div>
         <span
           style={{
             width: 15,
@@ -117,7 +138,7 @@ const MenuList = () => {
             borderRadius: 10,
             color: "var(--primary-color)",
             fontSize: 12,
-            "font-weight": "bold",
+            fontWeight: "bold",
             textAlign: "center",
             alignItems: "center",
           }}

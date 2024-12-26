@@ -3,12 +3,15 @@ import { useContext } from "react";
 import { OrderContext } from "../contexts/OrderContext";
 
 // 카페 정보 조회
-export const getCafe = async data => {
+export const getCafe = async (data, fn) => {
   try {
     const res = await axios.get(`/api/cafe?cafe_id=${data}`);
-    console.log("카페정보 조회", res.data);
     const resultData = res.data.resultData;
-    return resultData;
+    console.log("카페정보 조회", resultData);
+    if (resultData) {
+      fn(resultData);
+      console.log("데이터 있음");
+    }
   } catch (error) {
     console.log("카페정보 조회:", error);
   }
@@ -16,8 +19,10 @@ export const getCafe = async data => {
 
 export const getCafeMenu = async data => {
   try {
-    const res = await axios.get(`/api/cafe/menu?cafe_id=${data}`);
+    const res = await axios.get(`/api/menu?cafeId=${data}`);
     console.log("getCafeMenu res:", res.data);
+    const resultData = res.data.resultData;
+    return resultData;
   } catch (error) {
     console.log(error);
   }
