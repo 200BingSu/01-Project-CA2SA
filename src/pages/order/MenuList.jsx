@@ -54,7 +54,7 @@ const MenuList = () => {
     const getCafeMenu = async data => {
       try {
         const res = await axios.get(`/api/menu?cafeId=${cafeId}`);
-        // console.log("메뉴 리스트 통신 결과:", res.data);
+        console.log("메뉴 리스트 통신 결과:", res.data);
         const resultData = res.data.resultData;
         if (resultData) {
           setCafeMenuData(resultData);

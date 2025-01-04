@@ -1,21 +1,22 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { OrderContext } from "../../contexts/OrderContext";
 import { PrimaryButton } from "../../styles/common";
 import { CancleButton, ModalDiv } from "../../styles/order/BucketModal";
 
-const BucketModal = ({ showPopUp, setShowPopup, cafeInfo }) => {
+const DeleteMenuModal = ({ item, index, showModal, setShowModal }) => {
   const { setOrder, order } = useContext(OrderContext);
   const navigate = useNavigate();
   const handleClickButton = () => {
-    setShowPopup(false);
-    setOrder({
-      ...order,
-      pickUpTime: "",
-      memo: "",
-      cafeId: parseInt(cafeInfo.cafeId),
-      menuList: [],
-      // orderTime: "",
+    setOrder(prevOrder => {
+      const updatedMenu = [...prevOrder.menuList];
+      if (updatedMenu[index].count > 1) {
+        updatedMenu[index].count -= 1; // 수량 감소
+      } else {
+        setShowModal(true);
+        updatedMenu.splice(index, 1);
+      }
+      return { ...prevOrder, menuList: updatedMenu };
     });
   };
   return (
@@ -37,7 +38,7 @@ const BucketModal = ({ showPopUp, setShowPopup, cafeInfo }) => {
               type="button"
               onClick={() => {
                 navigate(`/order/menu?cafeId=${order.cafeId}`);
-                setShowPopup(false);
+                setShowModal(false);
               }}
             >
               취소
@@ -52,4 +53,4 @@ const BucketModal = ({ showPopUp, setShowPopup, cafeInfo }) => {
   );
 };
 
-export default BucketModal;
+export default DeleteMenuModal;

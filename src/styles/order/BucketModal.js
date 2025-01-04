@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const BucketModalDiv = styled.div`
+export const ModalDiv = styled.div`
   position: fixed;
   width: 640px;
   height: 100%;
