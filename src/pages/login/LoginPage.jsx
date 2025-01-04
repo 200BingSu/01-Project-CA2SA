@@ -15,6 +15,7 @@ import {
   SignUpButton,
 } from "../../styles/join/loginpage";
 import { UserPageContext } from "../../contexts/UserPageContext";
+import { OrderContext } from "../../contexts/OrderContext";
 
 const loginSchema = yup.object({
   email: yup
@@ -29,6 +30,7 @@ const loginSchema = yup.object({
 });
 
 const LoginPage = ({ onLoginSuccess }) => {
+  const { setOrder, order } = useContext(OrderContext);
   const handleLogin = () => {
     const userData = {
       userId: "",
@@ -59,6 +61,8 @@ const LoginPage = ({ onLoginSuccess }) => {
       });
       // 로그인
       console.log("Response Data: ", response.data);
+      // context
+      setOrder({ ...order, userId: response.data.resultData.userId });
       if (response.data && response.data.resultMessage === "로그인 성공") {
         setMyPage(response.data.resultData);
         setLoginError("");
@@ -98,7 +102,7 @@ const LoginPage = ({ onLoginSuccess }) => {
             <img
               src="/images/ca2saLogo.png"
               style={{
-                width: "115px",
+                height: "110px",
               }}
             />
           </div>
@@ -116,9 +120,7 @@ const LoginPage = ({ onLoginSuccess }) => {
                 placeholder="이메일을 입력해주세요."
                 style={{ fontSize: "16px", fontWeight: "300" }}
               />
-              <p style={{ color: "var(--error-clolr)", fontSize: "14px" }}>
-                {errors.email?.message}
-              </p>
+              <p style={{ color: "red" }}>{errors.email?.message}</p>
             </EmailArea>
             <PasswordArea>
               <p>비밀번호</p>
@@ -128,16 +130,12 @@ const LoginPage = ({ onLoginSuccess }) => {
                 placeholder="비밀번호를 입력해주세요."
                 style={{ fontSize: "16px", fontWeight: "300" }}
               />
-              <p style={{ color: "var(--error-clolr)", fontSize: "14px" }}>
+              <p style={{ color: "#ff6600", fontSize: "14px" }}>
                 {errors.upw?.message}
               </p>
             </PasswordArea>
           </LoginWrap>
-          {loginError && (
-            <p style={{ color: "var(--error-clolr)", fontSize: "14px" }}>
-              {loginError}
-            </p>
-          )}
+          {loginError && <p style={{ color: "red" }}>{loginError}</p>}
           <div className="loginSignUpWrap">
             <LoginButton>
               <button type="submit" onClick={handleLogin}>
